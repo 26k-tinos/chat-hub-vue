@@ -1,5 +1,5 @@
 <template>
-  <div class="text-xl chathub-day">{{ date.date }}</div>
+  <div class="text-xl chathub-day pt-4">{{ date.date }}</div>
   <PromptDetail :prompts="date.prompts" ></PromptDetail>
 </template>
 

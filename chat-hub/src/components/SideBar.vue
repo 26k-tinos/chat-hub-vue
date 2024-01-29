@@ -1,19 +1,11 @@
 <template>
   <!-- top logg -->
-  <div class="bg-slate-50 min-h-32 custom-background">
-    <div
-      @click="$store.commit('setPage', 0)"
-      class="flex mt-8 mx-4 gap-4 items-center">
-      <div class="h-16 w-16"><img src="@/assets/chathub.png"/></div>
-      <div class="flex flex-col gap-1">
-        <div class="text-2xl chathub-main">CHAT HUB</div>
-        <div class="chathub-sub">Try Everything!</div>
-      </div>
-    </div>
+  <div class="min-h-28">
+    <SideBarTop></SideBarTop>
   </div>
 
   <!-- prompt -->
-  <div class="h-full overflow-auto custom-background">
+  <div class="h-full overflow-auto">
     <!-- component1.. -->
     <div class="side-prompt flex flex-col px-4 gap-2 py-4">
       <Prompt 
@@ -24,7 +16,7 @@
   </div>
 
   <!-- bottom -->
-  <div class="flex justify-between items-end min-h-16 pb-4 px-4 custom-background">
+  <div class="flex justify-between items-end min-h-16 pb-4 px-4">
     <SideBarBottom></SideBarBottom>
   </div>
 </template>
@@ -32,12 +24,14 @@
 <script>
 import Prompt from "@/components/Prompt.vue"
 import SideBarBottom from "@/components/SideBarBottom.vue"
+import SideBarTop from "@/components/SideBarTop.vue"
 
 export default {
     name: 'SideBar',
     components:{
       Prompt,
-      SideBarBottom
+      SideBarBottom,
+      SideBarTop
     },
     data() {
       return {

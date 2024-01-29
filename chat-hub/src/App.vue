@@ -1,7 +1,7 @@
 <template>
   <div class="flex w-full h-screen">
     <!-- 왼쪽 메뉴 -->
-    <div class="flex flex-col justify-between w-1/5 h-screen">
+    <div class="flex flex-col justify-between w-1/5 h-screen custom-background">
       <SideBar></SideBar>
     </div>
 
