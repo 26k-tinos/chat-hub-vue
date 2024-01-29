@@ -1,63 +1,89 @@
 <template>
-  <div>
-    <h4>hello world</h4>
-    <div v-if="test == 'hi'">
-      <div v-for="item, index in myArrayInObject" :key="index">
-        <MyComponent ></MyComponent>
-        <h2>{{ item.name }}</h2>
-        <h4>{{ item.data }}</h4>
-      </div>
+  <div class="flex w-full h-screen">
+    <!-- 왼쪽 메뉴 -->
+    <div class="flex flex-col justify-between w-1/5 h-screen">
+      <SideBar></SideBar>
     </div>
-    <div :class="handleChangeClass()">{{ test }}</div>
-    <div :style="test == 'hi' ? myStyle : ''">{{ addTestInTest() }}</div>
-    <button @click="test='changed...'">change test</button>
-    <button @click="changeTest('hi')">hi button</button>
-  </div>
 
+
+    <!-- 오른쪽 섹션 -->
+    <div class="flex flex-col justify-between w-4/5 h-screen">
+      <InitPage v-if="$store.state.page == 0"></InitPage>
+      
+      <MainPage v-if="$store.state.page == 1"></MainPage>
+    </div>
+  </div>
 </template>
 
 <script>
-import MyComponent from './components/MyComponent.vue';
+import InitPage from '@/pages/InitPage.vue'
+import MainPage from '@/pages/MainPage.vue'
+import SideBar from '@/components/SideBar.vue'
 
 export default {
-  components: {
-    MyComponent,
-  },
+  name: 'App',
+  components:{
+    InitPage,
+    MainPage,
+    SideBar
+},
   data() {
     return {
-      myArray: [1,2,3,4,5],
-      myArrayInObject: [{
-          'data': 'data1',
-          'name': 'name'
-        }, {
-          'data': 'data2',
-          'name': 'name'
-        }
-      ],
-      test: 'test',
-      myStyle: {
-        'color': 'red'
-      }
     }
   },
   methods: {
-    changeTest(changeValue) {
-      this.test = changeValue
-    },
-    handleChangeClass() {
-      if (this.test == 'hi'){
-        return 'myClass'
-      }
-    },
-    addTestInTest() {
-      return this.test + '....test..'
-    }
+
+  },
+  mounted() {
+
   }
 }
 </script>
 
-<style scoped>
-.myClass { 
-  color: rebeccapurple;
+<style>
+  @import url('https://fonts.googleapis.com/css?family=Roboto:400,500,700&display=swap');
+
+  .custom-background {
+    background-color: #EEEEFF;
+  }
+
+  .chathub-main{
+    color: #FF6600;
+  }
+
+  .chathub-sub{
+    color: #6666FF;
+  }
+
+  .chathub-day{
+    color: #FAA166;
+  }
+
+  .chathub-back{
+    color: #27279C;
+  }
+
+  .chathub-back-madeby{
+    color: #8686FF;
+  }
+
+  
+
+  /* .chathub-chat-box{
+    border-color: #27279C;
+    border-width: 2px;
+    background-color: #EEEEFF;
+  } */
+
+  div::-webkit-scrollbar {
+  display: none;
 }
+  body {
+    margin: 0;
+    padding: 0;
+    /* width: 1920px;
+    height: 1080px; */
+    /* border: 1px solid #000; */
+    font-family: 'Roboto', sans-serif;
+  }
 </style>
