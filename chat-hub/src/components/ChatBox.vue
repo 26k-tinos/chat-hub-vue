@@ -3,7 +3,7 @@
     <div class="flex justify-between mx-60 grow-1 bg-white items-center chathub-chat">
       <input :value="$store.state.chatBoxText" @input="$store.commit('setChatBoxText', $event.target.value)"  id="chat-box" type="text" class="text-3xl py-4 px-6 w-full" placeholder="Chat with AI Models..." />
       <div class="w-10 h-10 mx-4" @click="$store.dispatch('handleRequestChat')">
-        <img class="hidden" src="@/assets/chat-send.png"/>
+        <img class="hidden" src="@/assets/chat-send.png" style="cursor:pointer;"/>
       </div>
     </div>
     {{ text }}
