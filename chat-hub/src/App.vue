@@ -1,31 +1,33 @@
 <template>
   <div class="flex w-full h-screen">
-    <!-- 왼쪽 메뉴 -->
+    <!-- 왼쪽 메뉴 --> 
     <div class="flex flex-col justify-between w-1/5 h-screen custom-background">
       <SideBar></SideBar>
     </div>
 
-
     <!-- 오른쪽 섹션 -->
-    <div class="flex flex-col justify-between w-4/5 h-screen">
+    <div class="flex flex-col justify-between w-4/5 h-screen overflow-hidden">
       <InitPage v-if="$store.state.page == 0"></InitPage>
       
       <MainPage v-if="$store.state.page == 1"></MainPage>
     </div>
   </div>
+  <SignedPage></SignedPage>
 </template>
 
 <script>
 import InitPage from '@/pages/InitPage.vue'
 import MainPage from '@/pages/MainPage.vue'
 import SideBar from '@/components/SideBar.vue'
+import SignedPage from '@/pages/SignedPage.vue'
 
 export default {
   name: 'App',
   components:{
     InitPage,
     MainPage,
-    SideBar
+    SideBar,
+    SignedPage
 },
   data() {
     return {

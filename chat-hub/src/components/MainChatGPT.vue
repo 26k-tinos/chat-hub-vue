@@ -1,11 +1,11 @@
 <template>
   <MainUserDetail></MainUserDetail>
 
-  <MainInputChat></MainInputChat>
+  <MainInputChat :question="$store.state.chatWithGPT[index].question"></MainInputChat>
 
   <MainChatGPTDetail></MainChatGPTDetail>
 
-  <MainOutputChat></MainOutputChat>
+  <MainOutputChat :answer="$store.state.chatWithGPT[index].answer"></MainOutputChat>
 </template>
 
 <script>
@@ -18,6 +18,9 @@ import MainOutputChat from './MainOutputChat.vue';
 
   export default {
     name: 'MainChatGPT',
+    props: {
+      index: Number
+    },
     components: { MainUserDetail, MainChatGPTDetail, MainInputChat, MainOutputChat }
 }
 </script>

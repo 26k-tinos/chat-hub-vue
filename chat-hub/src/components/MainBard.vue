@@ -1,11 +1,11 @@
 <template>
   <MainUserDetail></MainUserDetail>
 
-  <MainInputChat></MainInputChat>
+  <MainInputChat :question="$store.state.chatWithBard[index].question"></MainInputChat>
 
   <MainBardDetail></MainBardDetail>
 
-  <MainOutputChat></MainOutputChat>
+  <MainOutputChat :answer="$store.state.chatWithBard[index].answer"></MainOutputChat>
 </template>
 
 <script>
@@ -16,7 +16,10 @@ import MainUserDetail from './MainUserDetail.vue';
 
 export default {
     name: 'MainBard',
-    components: { MainUserDetail, MainBardDetail, MainInputChat, MainOutputChat }
+    components: { MainUserDetail, MainBardDetail, MainInputChat, MainOutputChat },
+    props: {
+      index: Number,
+    }
 }
 </script>
 

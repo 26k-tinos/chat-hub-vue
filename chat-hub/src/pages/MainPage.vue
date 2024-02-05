@@ -16,15 +16,15 @@
 
         <!-- Chat GPT -->
         <div v-if="selectedModels[index] === 'chatgpt'">
-          <div v-for="item, index in 2" :key="index" class="flex flex-col mt-10 mx-28 gap-4">
-            <MainChatGPT></MainChatGPT>
+          <div v-for="item, index in $store.state.chatWithGPT" :key="index" class="flex flex-col mt-10 mx-28 gap-4">
+            <MainChatGPT :index="index"></MainChatGPT>
           </div>
         </div>
 
         <!-- Bard -->
         <div v-if="selectedModels[index] === 'bard'">
-          <div v-for="item, index in 2" :key="index" class="flex flex-col mt-10 mx-28 gap-4">
-            <MainBard></MainBard>
+          <div v-for="item, index in $store.state.chatWithBard" :key="index" class="flex flex-col mt-10 mx-28 gap-4">
+            <MainBard :index="index"></MainBard>
           </div>
         </div>
       </div>
@@ -56,11 +56,11 @@ export default {
   methods: {
     // 수정된 부분: isChecked 데이터 업데이트
     updateChecked(index, value) {
-      this.$set(this.isChecked, index, value);
+      this.isChecked[index] = value
     },
     // 수정된 부분: selectedModel 데이터 업데이트
     updateSelectedModel(index, value) {
-      this.$set(this.selectedModels, index, value);
+      this.selectedModels[index] = value
     },
   },
   mounted () {
