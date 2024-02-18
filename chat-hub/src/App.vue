@@ -10,12 +10,16 @@
       <InitPage v-if="$store.state.page == 0"></InitPage>
       
       <MainPage v-if="$store.state.page == 1"></MainPage>
+
+      
     </div>
   </div>
-  <SignedPage></SignedPage>
+  <SignedPage v-if="$store.state.modelOpen == true"></SignedPage>
 </template>
 
 <script>
+import { ensureUserInfo, initChatTrials } from '@/lib/user.js'
+
 import InitPage from '@/pages/InitPage.vue'
 import MainPage from '@/pages/MainPage.vue'
 import SideBar from '@/components/SideBar.vue'
@@ -36,8 +40,24 @@ export default {
   methods: {
 
   },
-  mounted() {
+  created() { // 화면이 올라오기 전
+    // 앱 초기화 시 UUID 확인
+    const { userUUID, userChatTrials } = ensureUserInfo()
+    // initChatTrials(0)
+    this.$store.commit('setUserUUID', userUUID)
+    console.log('User UUID:', userUUID)
+    console.log('User Chat Trials:', userChatTrials)
 
+    // 가지고 있는것 : 유저 아이디.. 단 하나,,,,
+    // 1. 유저 아이디를 기반으로 log를 불러옴
+
+    // 만약.. 로그가 있다면,,,, 
+    
+    // 
+    this.$store.dispatch('handleChatLog')
+
+  }, 
+  mounted() { // 화면이 올라온 상태
   }
 }
 </script>
