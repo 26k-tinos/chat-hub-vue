@@ -167,6 +167,9 @@ const store = createStore({
           })
         })
 
+        // v-for item, key in result -> 
+        // v-for prompt in prompts -> (uuidv4)-prompt.chatId
+
         console.log(result)
 
       }

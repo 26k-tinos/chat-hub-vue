@@ -7,7 +7,7 @@ const HANDLE_MESSAGE = 'Cannot Load Conversation...'
 const URL = {
   'log': {
     'list': `${baseUrl}/log`,
-    'chat': (chatId) => `${baseUrl}/log/user/${userName}/${chatId}`,
+    'chat': (chatId, userName) => `${baseUrl}/log/${chatId}/user/${userName}`,
     'user': (userName) => `${baseUrl}/log/user/${userName}`,
   },
   'ask': {
