@@ -48,28 +48,8 @@ export default {
     color: black;
   }
   
-  .button-cancel:hover {
-    border-color: #6666FF;
-    border-width: 1px;
-    background-color: #6666FF;
-    color: white;
-  }
-
-  .button-submit:hover {
-    border-color: #404095; 
-    background-color: #404095;
-  }
 
   .signed-top{
     background: #6666FF;
-  }
-  
-  .chathub-chat:focus-within{
-    outline: 2px solid #27279C;
-    color: #9E9E9E;
-  }
-
-  .chathub-chat:focus-within img{
-    display: block;
   }
   </style>

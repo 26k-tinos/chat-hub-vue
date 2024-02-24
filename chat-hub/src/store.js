@@ -11,6 +11,8 @@ const store = createStore({
       userBardApiKey: '',
 
       isLoading: false,
+      isChecked: [true, true],
+      selectedModels: ['chatgpt', 'bard'],
 
       chatWithBard: [],
       chatWithGPT: [],
@@ -57,6 +59,13 @@ const store = createStore({
       console.log('[Mutation] setSaveKeyInCookie')
       chatApi.setGPTApiKey(state.userGptApiKey)
       chatApi.setBardApiKey(state.userBardApiKey)
+    },
+
+    setChecked(state, { index, value }) {
+      state.isChecked[index] = value;
+    },
+    setSelectedModel(state, { index, model }) {
+      state.selectedModels[index] = model;
     },
 
     // 동기적인 작업을 수행 -> state를 변경하는 작업.
@@ -184,10 +193,15 @@ const store = createStore({
         alert('Bard / GPT4 generates the answer. Please wait a moment...')
         return
       }
+      // 쿠키에서 정보 가져오는거죠,, -> 유저 정보가 왜 안들올까요?
       context.commit('setUserGptApiKey', chatApi.getGPTApiKey())
       context.commit('setUserBardApiKey', chatApi.getBardApiKey())
+      context.commit('setUserUUID', chatApi.getUserUUID())
+      
+      // console.log('[Action] handleRqeustChat - userUUID', context.state.userUUID)
+
       const trial = getChatTrials()
-      console.log('[Action] handleRequestChat', trial)
+      // console.log('[Action] handleRequestChat', trial)
 
       if (trial > 1 && context.state.userGptApiKey == '' && context.state.userBardApiKey == '') {
         // 모달 띠워줘야겠지??? -> 모달 띄우고나서 사용자가 sumit누르면, 모달 꺼지고
@@ -198,8 +212,8 @@ const store = createStore({
         return 
       }
       context.commit('startLoading')
-      console.log('[Action] handleRequestChat', context.state.page)
-      console.log('[Action] getChatTrials', trial)
+      // console.log('[Action] handleRequestChat', context.state.page)
+      // console.log('[Action] getChatTrials', trial)
 
       // 서버로부터 데이터를 받는 로직...
       const bardInput = {
@@ -219,28 +233,41 @@ const store = createStore({
       }
 
       // 요청 보낼떄, 조건에 맞는 애들만... 요청 보내기... 콜?
-      const { gptAnswer, gptSucess } = await ChatHubApi(gptInput)
-      const { bardAnswer, bardSucess } = await ChatHubApi(bardInput)
 
-      if (bardSucess && gptSucess) increaseChatTrials()
-      
-      const gpt = {
-        question: context.state.chatBoxText,
-        answer: gptAnswer
+      // 체크박스 상태에 따라 해당 모델의 인덱스 매핑
+      const gptIndex = context.state.selectedModels.indexOf('chatgpt');
+      const bardIndex = context.state.selectedModels.indexOf('bard');
+
+      // 인덱스가 올바르게 설정되었는지 확인
+      const gptChecked = context.state.isChecked?.[gptIndex] ?? false
+      if (gptChecked) {
+        const { gptAnswer, gptSucess } = await ChatHubApi(gptInput)
+        if (gptSucess) {
+          const gpt = {
+            question: context.state.chatBoxText,
+            answer: gptAnswer
+          }
+          context.commit('addChatWithGPT', gpt)
+        }
       }
 
-      const bard = {
-        question: context.state.chatBoxText,
-        answer: bardAnswer
+      const bardChecked = context.state.isChecked?.[bardIndex] ?? false
+      if (bardChecked) {
+        const { bardAnswer, bardSucess } = await ChatHubApi(bardInput)
+        if (bardSucess) {
+          const bard = {
+            question: context.state.chatBoxText,
+            answer: bardAnswer
+          }
+          context.commit('addChatWithBard', bard)
+        }
       }
 
-      context.commit('addChatWithGPT', gpt)
-      context.commit('addChatWithBard', bard)
+      // 두 조건 모두를 만족할 때 increaseChatTrials() 메서드 호출
+      if (gptIndex !== -1 || bardIndex !== -1) increaseChatTrials()
       context.commit('setChatBoxText', '')
-      
-      if (context.state.page == 0) {
-        context.commit('setPage', 1)
-      }
+
+      if (context.state.page == 0) context.commit('setPage', 1)
       context.commit('endLoading')
     },
   }

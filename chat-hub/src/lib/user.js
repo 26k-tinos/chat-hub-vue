@@ -39,6 +39,11 @@ const getGPTApiKey = () => {
   return userGPTApiKey
 }
 
+const getUserUUID = () => {
+  let userUUID = Cookies.get('userUUID')
+  return userUUID
+}
+
 const setGPTApiKey = (key) => {
   console.log('[SetGPTApiKey]', key)
   Cookies.set('userGPTApiKey', key, { expires: 365 }) // 365일 후 만료되는 쿠키 설정
@@ -78,6 +83,7 @@ const chatApi = {
   'setGPTApiKey': setGPTApiKey,
   'getBardApiKey': getBardApiKey,
   'setBardApiKey': setBardApiKey,
+  'getUserUUID': getUserUUID,
 }
 
 export { ensureUserInfo, increaseChatTrials, initChatTrials, getChatTrials, chatApi }

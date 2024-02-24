@@ -45,6 +45,8 @@ export default {
     const { userUUID, userChatTrials } = ensureUserInfo()
     // initChatTrials(0)
     this.$store.commit('setUserUUID', userUUID)
+
+    console.log('[State] [userUUID]',this.$store.state.userUUID)
     console.log('User UUID:', userUUID)
     console.log('User Chat Trials:', userChatTrials)
 

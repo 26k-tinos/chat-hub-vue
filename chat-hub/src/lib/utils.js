@@ -11,8 +11,8 @@ const URL = {
     'user': (userName) => `${baseUrl}/log/user/${userName}`,
   },
   'ask': {
-    'gpt': (prompt='', q='', userName='unknown', key='') => key == '' ? `${baseUrl}/ask/chatgpt?q=${q}` : `${baseUrl}/ask/chatgpt?q=${q}&userKey=${key}&userName=${userName}`,
-    'bard': (prompt='', q='', userName='unknown', key='') => key == '' ? `${baseUrl}/ask/bard?q=${q}` : `${baseUrl}/ask/bard?q=${q}&userKey=${key}&userName=${userName}`,
+    'gpt': (prompt='', q='', userName='', key='') => key == '' ? `${baseUrl}/ask/chatgpt?q=${q}&userName=${userName}` : `${baseUrl}/ask/chatgpt?q=${q}&userKey=${key}&userName=${userName}`,
+    'bard': (prompt='', q='', userName='', key='') => key == '' ? `${baseUrl}/ask/bard?q=${q}&userName=${userName}` : `${baseUrl}/ask/bard?q=${q}&userKey=${key}&userName=${userName}`,
   },
 }
 
@@ -24,8 +24,10 @@ const checkSucess = (response) => {
 }
 
 const ChatHubApi = async ({ 'type': type, 'prompt': prompt, 'text':text, 'userName': userName, 'key': key}) => {
+  console.log('[ChatHubApi] type:', type, 'prompt:', prompt, 'text:', text, 'userName:', userName, 'key:', key)
   try {
     const url = type == 'gpt' ? URL.ask.gpt(prompt, text, userName, key) : URL.ask.bard(prompt, text, userName, key)
+    console.log('[ChatHubApi] url:', url)
     // TODO
     // axios의 헤더 설정도 미리 해두기....
     const response = await axios.get(url)

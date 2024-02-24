@@ -1,29 +1,27 @@
 <template>
   <div class="flex justify-between grow overflow-auto">
-    <!-- Chat boc -->
-    <div v-for="item, index in 2" :key="index" class="flex flex-col w-1/2 h-full">
-
+    <!-- Chat box -->
+    <div v-for="(item, index) in 2" :key="index" class="flex flex-col w-1/2 h-full">
       <!-- Model -->
       <MainModelSelector
-        :isChecked="isChecked[index]"
-        :selectedModel="selectedModels[index]"
+        :isChecked="$store.state.isChecked[index]"
+        :selectedModel="$store.state.selectedModels[index]"
         @update:checked="updateChecked(index, $event)"
         @update:selectedModel="updateSelectedModel(index, $event)"
       ></MainModelSelector>
 
       <!-- Chat -->
       <div class="overflow-auto">
-
         <!-- Chat GPT -->
-        <div v-if="selectedModels[index] === 'chatgpt'">
-          <div v-for="item, index in $store.state.chatWithGPT" :key="index" class="flex flex-col mt-10 mx-28 gap-4">
+        <div v-if="$store.state.selectedModels[index] === 'chatgpt'">
+          <div v-for="(item, index) in $store.state.chatWithGPT" :key="index" class="flex flex-col mt-10 mx-28 gap-4">
             <MainChatGPT :index="index"></MainChatGPT>
           </div>
         </div>
 
         <!-- Bard -->
-        <div v-if="selectedModels[index] === 'bard'">
-          <div v-for="item, index in $store.state.chatWithBard" :key="index" class="flex flex-col mt-10 mx-28 gap-4">
+        <div v-if="$store.state.selectedModels[index] === 'bard'">
+          <div v-for="(item, index) in $store.state.chatWithBard" :key="index" class="flex flex-col mt-10 mx-28 gap-4">
             <MainBard :index="index"></MainBard>
           </div>
         </div>
@@ -46,21 +44,13 @@ export default {
     MainChatGPT,
     MainBard,
     MainModelSelector
-},
-  data() {
-    return {
-      isChecked: [true, true],
-      selectedModels: ['chatgpt', 'bard'],
-    }
   },
   methods: {
-    // 수정된 부분: isChecked 데이터 업데이트
     updateChecked(index, value) {
-      this.isChecked[index] = value
+      this.$store.commit('setChecked', { index, value });
     },
-    // 수정된 부분: selectedModel 데이터 업데이트
     updateSelectedModel(index, value) {
-      this.selectedModels[index] = value
+      this.$store.commit('setSelectedModel', { index, model: value });
     },
   },
   mounted () {
