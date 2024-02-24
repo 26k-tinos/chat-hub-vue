@@ -57,7 +57,7 @@ export default {
     
     // 
     this.$store.dispatch('handleChatLog')
-
+    console.log('[Action handleChatLog] >>', )
   }, 
   mounted() { // 화면이 올라온 상태
   }

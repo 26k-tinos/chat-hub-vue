@@ -11,8 +11,8 @@ const URL = {
     'user': (userName) => `${baseUrl}/log/user/${userName}`,
   },
   'ask': {
-    'gpt': (prompt='', q='', userName='', key='') => key == '' ? `${baseUrl}/ask/chatgpt?q=${q}&userName=${userName}` : `${baseUrl}/ask/chatgpt?q=${q}&userKey=${key}&userName=${userName}`,
-    'bard': (prompt='', q='', userName='', key='') => key == '' ? `${baseUrl}/ask/bard?q=${q}&userName=${userName}` : `${baseUrl}/ask/bard?q=${q}&userKey=${key}&userName=${userName}`,
+    'gpt': (prompt='', q='', userName='', key='') => key == '' ? `${baseUrl}/ask/chatgpt?userName=${userName}&chatId=${prompt}&q=${q}` : `${baseUrl}/ask/chatgpt?userKey=${key}&userName=${userName}&chatId=${prompt}&q=${q}`,
+    'bard': (prompt='', q='', userName='', key='') => key == '' ? `${baseUrl}/ask/bard?userName=${userName}&chatId=${prompt}&q=${q}` : `${baseUrl}/ask/bard?userKey=${key}&userName=${userName}&chatId=${prompt}&q=${q}`,
   },
 }
 
@@ -51,9 +51,9 @@ const ChatHubApi = async ({ 'type': type, 'prompt': prompt, 'text':text, 'userNa
 const ChatHubLog = async ({ 'type': type, 'userName': userName }) => {
   try {
     const url = type == 'list' ? URL.log.list : URL.log.user(userName)
-    const response = await axios.get(url)
+    const response = await axios.get(encodeURI(url))
     return {
-      [`${type}Log`]: response?.data ?? HANDLE_MESSAGE,
+      [`${type}Log`]: response?.data.filter((item) => item != '') ?? HANDLE_MESSAGE,
       [`${type}Sucess`]: checkSucess(response),
     }
   } catch (error) {
@@ -65,4 +65,21 @@ const ChatHubLog = async ({ 'type': type, 'userName': userName }) => {
   }
 }
 
-export { ChatHubApi, ChatHubLog }
+const ChatHubLogPrompt = async ({ 'chatId': chatId, 'userName': userName }) => {
+  try {
+    const url = URL.log.chat(chatId, userName)
+    const response = await axios.get(encodeURI(url))
+    return {
+      'chatLog': response?.data ?? HANDLE_MESSAGE,
+      'chatSucess': checkSucess(response),
+    }
+  } catch (error) {
+    console.error(error)
+    return {
+      'chatLog': HANDLE_MESSAGE,
+      'chatSucess': false
+    }
+  }
+}
+
+export { ChatHubApi, ChatHubLog, ChatHubLogPrompt }

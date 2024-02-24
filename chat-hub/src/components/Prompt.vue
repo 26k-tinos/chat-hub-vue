@@ -1,6 +1,9 @@
 <template>
   <div class="text-xl chathub-day">{{ date.date }}</div>
-  <PromptDetail :prompts="date.prompts" ></PromptDetail>
+  <PromptDetail 
+    :prompts="date.prompts"
+    :chats="date.chats"  
+  ></PromptDetail>
 </template>
 
 <script>
@@ -12,7 +15,7 @@ import PromptDetail from "@/components/PromptDetail.vue"
       PromptDetail
     },
     props: {
-      date: String,
+      date: Object,
     },
     data() {
       return {

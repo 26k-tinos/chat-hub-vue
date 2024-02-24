@@ -1,6 +1,5 @@
 <template>
   <div
-    @click="$store.commit('setPage', 0)"
     style="cursor:pointer;"
     class="flex mt-8 mx-4 gap-4 items-center">
     <div class="h-16 w-16"><img src="@/assets/chathub.png"/></div>
@@ -25,7 +24,7 @@ export default {
     }
   },
   methods: {
-    
+
   },
   mounted() {
     

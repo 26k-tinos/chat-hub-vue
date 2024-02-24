@@ -1,6 +1,7 @@
 import { createStore } from 'vuex'
-import { ChatHubApi, ChatHubLog } from './lib/utils.js'
+import { ChatHubApi, ChatHubLog, ChatHubLogPrompt } from './lib/utils.js'
 import { increaseChatTrials, getChatTrials, chatApi } from './lib/user.js'
+import { v4 as uuidv4 } from 'uuid';
 // Create a new store instance.
 const store = createStore({
   state () {
@@ -12,6 +13,13 @@ const store = createStore({
 
       isLoading: false,
       isChecked: [true, true],
+
+      userPrompt: '',
+
+      allPrompts: [],
+      forSideBar: [],
+      currentSelectByPrompt: [],
+
       selectedModels: ['chatgpt', 'bard'],
 
       chatWithBard: [],
@@ -55,6 +63,15 @@ const store = createStore({
     }
   },
   mutations: {
+    setAllPrompts(state, allPrompts) {
+      state.allPrompts = allPrompts
+    },
+    setUserPrompt(state, userPrompt) {
+      const filteredPrompt = String(userPrompt).replace(/[^\p{L}\p{N}]/gu, '')
+      console.log('[Mutation] setUserPrompt', filteredPrompt)
+      state.userPrompt = filteredPrompt
+    },
+
     setSaveKeyInCookie(state) {
       console.log('[Mutation] setSaveKeyInCookie')
       chatApi.setGPTApiKey(state.userGptApiKey)
@@ -90,6 +107,10 @@ const store = createStore({
       state.modelStatus = status
     },
 
+    initChat(state) {
+      state.chatWithBard = []
+      state.chatWithGPT = []
+    },
     addChatWithGPT(state, {question, answer}) {
       state.chatWithGPT.push({
         'question': question,
@@ -128,6 +149,14 @@ const store = createStore({
       state.modelOpen = false
     },
 
+    setForSideBar(state, forSideBar) {
+      state.forSideBar = forSideBar
+    },
+
+    setCurrentSelectByPrompt(state, currentSelectByPrompt) {
+      state.currentSelectByPrompt = currentSelectByPrompt
+    }
+
   },
   actions: {
     handleClickChatPrompt(context, text) {
@@ -153,34 +182,72 @@ const store = createStore({
         // 새로운.. 유저..
       } else {
         // 기존 유저...
-        const sortedLogs = userLog.sort((a, b) => new Date(a.createAt) - new Date(b.createAt))
-        console.log(sortedLogs)
+        const promptInput = userLog.map((prompt) => {
+          return {
+            'chatId': prompt,
+            'userName': context.state.userUUID,
+          }
+        }) 
 
-        // 날짜들을 각각 알 수 있짢아요? 
-        const checkToday = (log) => new Date().toDateString() == new Date(log.createAt).toDateString()
-        const setDate = (log) => checkToday() ? 'Today' : new Date(log.createAt).toDateString() // Dec 11
-        const dateArrays = new Array(new Set(sortedLogs.map((log) => new Date(log.createAt).toDateString())))
-        const result = []
+        const chatLogFromPrompts = []
 
-        dateArrays.forEach((date) => {
-          const test = []
-          userLog.forEach((log) => {
-            const logDate = new Date(log.createAt).toDateString()
-            if (date == logDate) {
-              test.push(log)
-            }
+        const createAt = (log) => log?.createAt ?? false
+        const checkToday = (log) => {
+          console.log('[CheckToday] log: ', log, 'createdAt(log):', createAt(log))
+          if (!createAt(log)) return false
+          return new Date().toDateString() == new Date(log.createAt).toDateString()
+        }
+        for (const input of promptInput) {
+          const { chatLog, chatSucess } = await ChatHubLogPrompt(input)
+
+          const gpt = chatLog.filter((log) => log.aiName == "CHATGPT").sort((a, b) => new Date(a.createAt) - new Date(b.createAt))
+          const bard = chatLog.filter((log) => log.aiName == "BARD").sort((a, b) => new Date(a.createAt) - new Date(b.createAt))
+
+          console.log('[GPT]',gpt[0].createAt)
+
+          const date = checkToday(gpt[0]) ? 'Today' : new Date(gpt[0].createAt).toDateString()
+          const prompt = gpt[0].input
+
+          chatLogFromPrompts.push({
+            'prompt': prompt,
+            'gpt': gpt,
+            'bard': bard,
+            'chatSucess': chatSucess,
+            'date': date,
+            'createAt': gpt[0].createAt
           })
-          result.push({
-            'date': `${setDate(sortedLogs[0])}`,
-            'prompts': test
+        }
+        context.commit('setAllPrompts', chatLogFromPrompts)
+        
+        const uniqueCratedAt = [...new Set(chatLogFromPrompts.map((log) => log.createAt))]
+
+        const dateArray = []
+
+        console.log('[UniqueCreatedAt]', uniqueCratedAt)
+
+        chatLogFromPrompts.forEach((log) => {
+          uniqueCratedAt.forEach((createAt) => {
+            if (log.createAt == createAt) {
+              dateArray.push(log.date)
+            }
           })
         })
 
-        // v-for item, key in result -> 
-        // v-for prompt in prompts -> (uuidv4)-prompt.chatId
+        console.log(dateArray)
 
-        console.log(result)
+        const dates = [...new Set(dateArray)]
 
+
+        const forSideBar = dates.map((date) => {
+          return {
+            'date': date,
+            'prompts': chatLogFromPrompts.filter((log) => log.date == date).map((log) => log.prompt),
+            'chats': chatLogFromPrompts.filter((log) => log.date == date)
+          }
+        })
+        context.commit('setForSideBar', forSideBar)
+
+        console.log('[Action] forSideBar: ', forSideBar)
       }
 
       return userLog
@@ -189,6 +256,7 @@ const store = createStore({
 
     // 비동기적인 작업을 수행 -> ajax를 받거나 등등...
     async handleRequestChat(context) {
+      let flag = false
       if (context.state.isLoading) {
         alert('Bard / GPT4 generates the answer. Please wait a moment...')
         return
@@ -215,10 +283,15 @@ const store = createStore({
       // console.log('[Action] handleRequestChat', context.state.page)
       // console.log('[Action] getChatTrials', trial)
 
+      if (context.state.userPrompt == '') {
+        flag = true
+        context.commit('setUserPrompt', context.state.chatBoxText + uuidv4())
+      }
+
       // 서버로부터 데이터를 받는 로직...
       const bardInput = {
         'type': 'bard',
-        'prompt': 'testPrompt',
+        'prompt': context.state.userPrompt,
         'text': context.state.chatBoxText,
         'userName': context.state.userUUID,
         'key': trial < 2 ? '' : context.state.userGptApiKey
@@ -226,7 +299,7 @@ const store = createStore({
 
       const gptInput = {
         'type': 'gpt',
-        'prompt': 'testPrompt',
+        'prompt': context.state.userPrompt,
         'text': context.state.chatBoxText,
         'userName': context.state.userUUID,
         'key': trial < 2 ? '' : context.state.userBardApiKey
@@ -268,6 +341,7 @@ const store = createStore({
       context.commit('setChatBoxText', '')
 
       if (context.state.page == 0) context.commit('setPage', 1)
+      await context.dispatch('handleChatLog')
       context.commit('endLoading')
     },
   }

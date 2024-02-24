@@ -40,6 +40,7 @@ const getGPTApiKey = () => {
 }
 
 const getUserUUID = () => {
+  console.log('[GetUserUUID]')
   let userUUID = Cookies.get('userUUID')
   return userUUID
 }
